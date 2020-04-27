@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fonts.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="script.js"></script>
+    <title>Discography Estimator</title>
+
+
+    <script>
+        var total = 0;
+        var b = -1;
+        var total_elem = document.getElementById("estimate");
+        var more_info = 0;
+        var prices = new Array;
+
+        //some global variables
+        
+        
+
+        var token = "QagHAEdpLddYKnYHjInWFOOiEgbUBpmzYZDnzviM";
+        //  fetch("/token")
+        //    .then(response => response.json())
+        //    .then(json => { token = json['token']; return token; })
+        //    .catch(error => console.log('error', error));
+
+        // runs a search for the given terms
+        var search = (terms) => {
+
+
+            
+            //first API call, retrieves the artist that the user is searching for
+            fetch('https://api.discogs.com/database/search?q=' + terms + '&type=artist&token=' + token)
+                .then(response => response.json())
+                .then(artists => {
+
+
+                    var total = 0;
+                    var b = -1;
+                    var total_elem = document.getElementById("estimate");
+
+                    var prices = new Array;
+
+
+
+                    artists.results.splice(1, artists.length);
+                    var artistID = artists.results[0].id;
+                    //auto picks the first result and uses it 
+
+                    artistSearch(artistID, artists.results[0].thumb);
+                    //passes the ID and thumbnail to the next API call
+
+                })
+
+                .catch(error => console.log('error', error));
+        }
+
+
+        var artistSearch = (id, pic) => {
+            fetch('https://api.discogs.com/artists/' + id)
+
+                .then(response => response.json())
+                .then(artistData => {
+
+                    console.log(artistData);
+                    //query for that artis's releases, pass in the thumbnail again
+
+                    render_artist(artistData, pic);
+                    releaseSearch(artistData);
+
+                })
+
+                .catch(error => console.log('error', error));
+        }
+
+
+        var releaseSearch = (data) => {
+
+            var artist_name = data.name.replace(" ", "%20");
+            //clean up the artist's name from earlier
+            
+            //https://api.discogs.com/database/search?q=Death Grips&artist=Death Grips&type=master&format=album&sort=year&sort_order=asc&token=QagHAEdpLddYKnYHjInWFOOiEgbUBpmzYZDnzviM    
+
+            fetch("https://api.discogs.com/database/search?q=" + artist_name + "&artist=" + artist_name + "&type=master&format=album&sort=year&sort_order=asc&token=" + token)
+
+                .then(response => response.json())
+
+                .then(releaseResult => {
+                    var album_container = document.getElementById("album-releases");
+                    album_container.innerHTML = "";
+                
+                    b = -1;
+
+                    //The 'b' variable was used as a way to define the number of rows that need to be generated in html to hold all of the album releases of the artist, here it is being reset to zero at the start of this function, which helps to let the user search again without refreshing the page
+                
+                    //for each realse that the artis has, query the market place for the cheapest listing, which they have an endpoint specifically for which was very helpful even though it is likely less accurate that reading all the existing listings on the market
+                    for (i in releaseResult.results) {
+                        
+                        render_albums(releaseResult.results[i], releaseResult.results.length, i, artist_name);
+
+                        costSearch(releaseResult.results[i], releaseResult.results.length, releaseResult);
+                    }
+
+                })
+
+                .catch(error => console.log('error', error));
+        }
+
+
+        var costSearch = (data, num, releases) => {
+            total = 0;
+            prices.length=0;   
+            //these variable resets ended up being the most important in allowing the user to search more than once without refreshing, finding the correct placement for these resets took a lot of trial and error 
+
+            
+            fetch("https://api.discogs.com/marketplace/stats/" + data.master_id + "?curr_abbr=CAD&token=" + token)
+
+                .then(response => response.json())
+
+                .then(marketResult => {
+
+                    //add each resulting price object to the end of an array that will contain all of them, this was required because THIS function is triggered inside of a for loop, so i needed a way of storing all the data in one variable.
+                
+                    //the collection of all the results is then pushed to the final update function
+                    prices.push(marketResult);
+                    update(prices, num, releases);
+
+
+                })
+
+                .catch(error => console.log('error', error));
+        }
+
+
+
+
+
+
+
+
+
+        var render_artist = (artist, pic) => {
+
+            var name = document.getElementById("artist_name")
+            var thumb = document.getElementById("artist_thumb")
+            var desc = document.getElementById("artist_desc")
+            var desc_text = artist.profile.slice(0, 250);
+
+            var link = '\"' + artist.uri + '\"'; 
+            
+            
+            //this populates the description of the artist.
+            desc_text += "... <a class='viewmore' onclick='newTab(" + link + ")'>View More</a>"
+
+            //if the artist does not already go by their real name, then include their real name in brackets next to their stage name.  If their stage name is the same as their real name or if it is a band without a 'real name' then simply list their stage name
+            if (artist.realname != artist.name && artist.realname !== undefined) {
+                name.innerHTML = artist.name + " (" + artist.realname + ")";
+
+            } else {
+                name.innerHTML = artist.name;
+
+            }
+            thumb.src = pic;
+            desc.innerHTML = desc_text;
+        }
+
+        //function to render all of the album listings
+        var render_albums = (data, num, i, name) => {
+
+            var album_container = document.getElementById("album-releases");
+            var number_of_rows = Math.ceil(num / 4);
+            var ii = parseInt(i) + 1;
+            var currentTitle = data.title.split("-")[1].slice(1);
+            
+            
+            var link = "https://www.discogs.com" + data.uri;
+            
+            
+            link = '\"' + link + '\"'; 
+            
+            name = name.replace("%20", " ");
+
+            //This if statement needed to be used in place of a for loop.  A for-loop would have made the code a million times easier but apparently for-loops could not be triggered at this point in the order of opporations, no matter what I tried they were not firing so I instead used the variable b to keep track of what row the album arts were on so that the html could be correctly injected and closed, 4 albums per row with no styling errors
+            if (ii % 4 == 1) {
+                b++;
+
+                album_container.innerHTML += "<div id='album-releases-row" + b + "' class='row w-100 no-nothin album-releases-row album-releases-row'>";
+
+                var rows = document.getElementsByClassName("album-releases-row");
+
+//              console.log(link);
+
+                rows[b].innerHTML += "<div onclick='newTab("+link+");' " + "class='discogsLink artist-image col-lg-3 small-pad'>" +
+                    "<img class='artist-image-file' src='" + data.thumb + "'>" +
+                    "<p class='top-bump artist-desc-text-title white helvetica-bold-obl center reg-text w-100'>" + currentTitle + "</p>" +
+                    "<p class='name-text center white helvetica-light reg-text w-100'>" + name + " (" + data.year + ")</p></div></div>";
+
+            }
+
+
+            
+            if (ii % 4 == 2 || ii % 4 == 3) {
+                var rows = document.getElementsByClassName("album-releases-row");
+                //                console.log(b);
+                //                console.log(rows[b]);
+
+                rows[b].innerHTML += "<div onclick='newTab("+link+");' " + "class='discogsLink artist-image col-lg-3 small-pad'>" +
+                    "<img class='artist-image-file' src='" + data.thumb + "'>" +
+                    "<p class='top-bump artist-desc-text-title white helvetica-bold-obl center reg-text w-100'>" + currentTitle + "</p>" +
+                    "<p class='name-text center white helvetica-light reg-text w-100'>" + name + " (" + data.year + ")</p></div></div>";
+            }
+
+
+
+
+            if (ii % 4 == 0) {
+                //                console.log(b);
+                var rows = document.getElementsByClassName("album-releases-row");
+
+                rows[b].innerHTML += "<div onclick='newTab("+link+");' " + "class='discogsLink artist-image col-lg-3 small-pad'>" +
+                    "<img class='artist-image-file' src='" + data.thumb + "'>" +
+                    "<p class='top-bump artist-desc-text-title white helvetica-bold-obl center reg-text w-100'>" + currentTitle + "</p>" +
+                    "<p class='name-text center white helvetica-light reg-text w-100'>" + name + " (" + data.year + ")</p></div></div>";
+
+
+
+                album_container.innerHTML += "</div>";
+
+            }
+
+        }
+
+
+        //final function in the order of opporations, post all the data to the user
+        function update(prices, num, data) {
+
+            total=0;
+
+            
+            //update is technically called within a for-loop, to make sure that it doesn't fire continuously or more than once, I added this if statment to make sure it is only triggered at the end of the process 
+            if (prices.length == num) {
+                
+            var moreInfoTable = document.getElementById("moreinfo");
+            var toprow = "<div class='alternate moreinfo-table-row w-100 row'><span class='white reg-text helvetica-bold-obl no-nothin table-text col-lg-4'>Release:</span><span class='white reg-text helvetica-bold-obl no-nothin table-text-right col-lg-4'>Found For:</span><span class='white reg-text helvetica-bold-obl no-nothin table-text-last col-lg-4'>% Of Total Cost</span></div></div>";
+            
+            moreInfoTable.innerHTML = toprow;
+            //this function serves to reset the page when the user makes another search
+
+
+                //add the prices together
+                for (i = 0; i < prices.length; i++) {
+                    if (prices[i].lowest_price != null) {
+                        total += prices[i].lowest_price.value;
+                    }
+                }
+
+
+                var total_elem = document.getElementById("estimate");
+
+
+
+                //calculate percentages and add up the total
+                for (ii = 0; ii < data.results.length; ii++) {
+
+                    //small name fix to ensure they are displayed properly
+                    var currentTitle = data.results[ii].title.split("-")[1].slice(1);
+
+
+                    //                    console.log(prices[ii]);
+
+                    //if the fetched infomation doesnt have price data, which some listings dont, then just write "no data" and don't include thems
+                    if (prices[ii].lowest_price != null) {
+
+
+                        var percentage = prices[ii].lowest_price.value;
+
+                        percentage /= total;
+                        percentage *= 100;
+                        percentage = percentage.toFixed(2);
+                        percentage = percentage.toString();
+                        percentage = percentage + "%";
+
+
+                        if (prices[ii].lowest_price.value.toString().includes(".")) {
+
+                            if (prices[ii].lowest_price.value.toString().split(".")[1].length < 2) {
+
+                                var currentPrice = prices[ii].lowest_price.value + "0";
+                                currentPrice = "$" + currentPrice;
+                            } else {
+
+
+                                var currentPrice = prices[ii].lowest_price.value;
+                                currentPrice = "$" + currentPrice;
+                            }
+
+                        } else {
+
+                            var currentPrice = prices[ii].lowest_price.value + ".00";
+                            currentPrice = "$" + currentPrice;
+                        }
+
+
+                    } else {
+                        var currentPrice = "No Data";
+
+                        var percentage = "--";
+
+                    }
+
+
+                    //change text color if there is no data
+                    if (currentPrice == "No Data") {
+                        var red = "red";
+                    } else {
+                        var red = "green";
+                    }
+
+                    //alternate background color for a more readable list under 'more info'
+                    if (ii % 2 == 1) {
+                        var background = "alternate";
+                    } else {
+                        var background = "main";
+                    }
+
+                    moreInfoTable.innerHTML = moreInfoTable.innerHTML + "<div class='moreinfo-table-row w-100 row " + background + "'>" +
+                        "<span class='table-text white reg-text helvetica-light " +
+                        "no-nothin table-text col-lg-4'>" + currentTitle + " (" + data.results[ii].year + ")" + "</span>" +
+                        "<span class='table-text " + red + " reg-text helvetica-light" +
+                        " no-nothin table-text-right col-lg-4'>" + currentPrice + "</span>" +
+                        "<span class='table-text white reg-text helvetica-light" +
+                        " no-nothin table-text-last col-lg-4'>" + percentage + "</span></div>";
+
+                }
+
+                
+                //add tax
+                total = total * 1.13;
+                total = total.toFixed(2);
+
+                //finally add everything onto the page and remove the loading icon at the very end
+                document.getElementsByClassName("moreinfo-table-row")[prices.length].classList.add("last-moreinfo-table-row");
+
+                document.getElementById("load").classList.remove("loading");
+
+                total_elem.innerHTML = "$" + total + "CAD";
+
+                var placeholder = document.getElementById("logo-placeholder");
+                var tot = document.getElementById("total-cost-div");
+                var inp = document.getElementById("input-interpretation-div");
+
+                tot.classList.remove("hidden");
+                inp.classList.remove("hidden");
+                placeholder.classList.add("hidden");
+
+
+            }
+
+
+        }
+
+
+
+
+        //function to hid and unhide the more info section
+        function moreInfo() {
+
+            more_info++;
+
+            var more = document.getElementById("moreinfo");
+            var moreButton = document.getElementById("moreinfoButton");
+            var tax = document.getElementById("tax");
+
+            if (more_info % 2 == 1) {
+                //clicked on
+                more.classList.toggle("hidden");
+                moreButton.innerHTML="Less Info";
+
+            } else {
+                //clicked off
+                more.classList.toggle("hidden");
+                moreButton.innerHTML="More Info";
+            }
+
+        }
+
+
+
+        //open link in new tab function for clicking on each of the options
+        function newTab(link){
+          var win = window.open(link, '_blank');
+          win.focus();
+        }
+        
+        
+        
+
+
+        // when the form is submitted, launch the search ang begin the chain of events
+        var formSubmit = (e) => {
+
+            event.preventDefault();
+            var terms = document.getElementById("searchbar").value;
+            search(terms);
+
+            var placeholder = document.getElementById("logo-placeholder");
+            var tot = document.getElementById("total-cost-div");
+            var inp = document.getElementById("input-interpretation-div");
+
+            placeholder.classList.remove("hidden");
+            tot.classList.add("hidden");
+            inp.classList.add("hidden");
+            document.getElementById("load").classList.add("loading");
+        }
+
+    </script>
+
+
+</head>
+
+<body onload="focus();">
+
+    <div class="website-con w-100 row h-100 no-nothin">
+
+        <div class="intro-con col-6 no-nothin">
+
+            <img class="sticky backgroundImage no-nothin" src="Assets/anthony-martino-6AtQNsjMoJo-unsplash.jpg">
+            <div class="backgroundOverlay w-100 h-100">
+            </div>
+
+
+
+            <div class="mainTitle row col-lg-8 mx-auto">
+                <div class="no-nothin title-container mx-auto row">
+                <img src="Assets/Discogs-Branding/discogs-logo-white.svg" class="discogsLogo col-lg-5 no-pad">
+
+                <div class="col-lg-6 helvetica-cond-obl white titleText title no-pad">
+                    <p>Discography Cost</p>
+                    <p>Estimation Tool</p>
+                </div>
+                </div>
+
+            </div>
+
+
+
+            <div class="how row col-lg-8 mx-auto">
+
+                <div class="howItWorksContainer no-nothin col-lg-4">
+                <p class="white helvetica-bold-obl">How it Works:</p>
+                <p class="white helvetica-regular reg-text">Enter the name of a desired artist to receive the estimated cost of their discography according to the value of their physical releases in the Discogs marketplace.</p>
+                <p class="white helvetica-regular reg-text">This application is powered by the Discogs API and is a third party tool not affiliated with Discogs.</p>
+                </div>
+            </div>
+
+            <div class="withlove row col-lg-8 mx-auto">
+                <div class="no-nothin withlove-container col-lg-4">
+                <p class="white helvetica-regular withlove-text">Made with love by Sam Giustizia of Sheridan's Interaction Design Program</p>
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+
+
+        <div class="func-con col-6">
+
+            <div class="scroll">
+
+                <div class="search col-lg-12">
+                    <p class="col-lg-10 mx-auto white helvetica-light-obl reg-text  section-title">Enter the full name of an artist...</p>
+
+                    <form class="col-lg-10 mx-auto" onsubmit="formSubmit();">
+
+                        <input id="searchbar" type="search" class="searchbar w-100 helvetica-regular" placeholder="Search for an artist..." focus>
+
+                    </form>
+
+
+                </div>
+
+
+
+
+                <div id="logo-placeholder" class="logo-backdrop mx-auto my-auto row col-lg-4">
+                    <img id="load" src="Assets/Discogs-Branding/discogs-vinyl-record-mark-white.svg" class="col-lg-12 logo-backdrop-img">
+                </div>
+
+
+
+
+                <div class="results mx-auto col-lg-10">
+
+                    <div id="total-cost-div" class="hidden total-cost-container col-lg-12 left-bump">
+                        <p class="section-title no-pad mx-auto white helvetica-light-obl reg-text">Total Cost:</p>
+
+                        <div class="cost-container">
+                            <div class="cost-box col-lg-12 no-nothin">
+                                <p id="estimate" class="mx-auto center my-auto knockout cost-text white">$999.99</p>
+                                    <p id="tax" class="tax mx-auto center my-auto withlove-text white helvetica-light">*13% Tax Included, Shipping cost is unique to each Seller</p>
+
+
+                                <div id="moreinfo" class="hidden alternate moreinfo-table-container w-100">
+
+                                    <div class="alternate moreinfo-table-row w-100 row">
+                                        <span class="white reg-text helvetica-bold-obl no-nothin table-text col-lg-4">Release:</span>
+                                        <span class="white reg-text helvetica-bold-obl no-nothin table-text-right col-lg-4">Found For:</span>
+                                        <span class="white reg-text helvetica-bold-obl no-nothin table-text-last col-lg-4">% Of Total Cost</span>
+                                    </div>
+                                </div>
+
+                                <p id="moreinfoButton" class="tax mx-auto center my-auto withlove-text white helvetica-light-obl" onclick="moreInfo();">More Info</p>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+                    <div id="input-interpretation-div" class="hidden input-interp-container col-lg-12 left-bump">
+                        <p class="section-title no-pad mx-auto white helvetica-light-obl">Input Interpretation:</p>
+
+                        <div class="artistDesc-container col-lg-12 row">
+
+                            <div class="artist-image col-lg-3 no-pad">
+                                <img id="artist_thumb" class="artist-image-file" src="Assets/thumb-placeholder.png">
+                            </div>
+
+                            <div class="artist-desc col-lg-9 no-pad left-spacer">
+                                <p id="artist_name" class="artist-desc-text-title white helvetica-bold-obl reg-text w-100">Artist Name</p>
+                                <p id="artist_desc" class="artist-desc-text white helvetica-regular reg-text w-100">Placeholder text. If you're reading this, somethin ain't right.</p>
+                            </div>
+
+                        </div>
+
+                        <div id="album-releases" class="artist-albums-container col-lg-12 row no-nothin">
+
+                            <!--
+                            <div id="album-releases-row" class="row w-100 no-nothin album-releases-row">
+                            <div class="artist-image col-lg-3 small-pad">
+                                <img class="artist-image-file" src="Assets/thumb-placeholder.png">
+                                <p class="top-bump artist-desc-text-title white helvetica-bold-obl center reg-text w-100">Title</p>
+                                <p class="center white helvetica-light reg-text w-100">Artist (Year)</p>
+                            </div>
+                            </div>
+-->
+
+
+                        </div>
+
+
+
+
+
+
+
+
+
+
+                    </div>
+
+
+
+
+
+
+
+
+
+
+                </div>
+
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+</body>
+
+
+
+
+
+
+</html>

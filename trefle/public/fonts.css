@@ -1,0 +1,111 @@
+@font-face {
+    font-family: Helvetica-Reg;
+    src: url(Assets/Fonts/HelveticaLTStd-Roman.otf);
+    font-style: normal;
+    font-weight: 400;
+}
+
+
+@font-face {
+    font-family: Helvetica;
+    src: url(Assets/Fonts/HelveticaLTStd-Light.otf);
+    font-style: normal;
+    font-weight: 300;
+}
+
+
+@font-face {
+    font-family: Helvetica;
+    src: url(Assets/Fonts/HelveticaLTStd-LightObl.otf);
+    font-style: oblique;
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: Helvetica;
+    src: url(Assets/Fonts/HelveticaLTStd-CondObl.otf);
+    font-style: condensed, oblique;
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: Helvetica;
+    src: url(Assets/Fonts/HelveticaLTStd-BoldObl.otf);
+    font-style: condensed, oblique;
+    font-weight: 600;
+}
+
+
+@font-face {
+    font-family: Knockout;
+    src: url(Assets/Fonts/Knockout-HTF31-JuniorMiddlewt.otf);
+    font-style: normal;
+    font-weight: 500;
+}
+
+
+
+
+
+.helvetica-regular{
+    font-family: Helvetica-Reg;
+    font-weight: 400!important;
+    font-style: normal;
+    font-size: var(--text);
+}
+
+.helvetica-light{
+    font-family: Helvetica;
+    font-style: normal;
+    font-weight: 300;
+    font-size: var(--text);
+}
+
+.helvetica-light-obl{
+    font-family: Helvetica;
+    font-style: oblique;
+    font-weight: 300;
+    font-size: var(--text);
+}
+
+.helvetica-cond-obl{
+    font-family: Helvetica;
+    font-style: condensed, oblique;
+    font-weight: 400;
+}
+
+.helvetica-bold-obl{
+    font-family: Helvetica;
+    font-style: condensed, oblique;
+    font-weight: 600;
+    font-size: var(--text);
+}
+
+
+.knockout{
+    font-family: Knockout;
+    font-style: normal;
+    font-weight: 500;
+}
+
+
+
+.titleText{
+    font-size: 1.7rem;
+    line-height: 1.1rem; 
+}
+
+
+.withlove-text{
+    font-size:0.8rem;
+    display:inline-flex;
+}
+
+.center{
+    text-align: center;
+}
+
+.cost-text{
+    font-size:4rem;
+    display:inline-flex;
+}

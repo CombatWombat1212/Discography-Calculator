@@ -1,0 +1,411 @@
+:root {
+  --mainBG: #333333;
+  --text: 0.9rem!important;
+}
+
+
+body{
+    overflow-x: hidden;
+/*    overflow-y: hidden;*/
+    hyphens: auto;
+}
+
+.no-marg{
+    margin: 0!important;
+}
+
+.left-bump{
+    margin-left: 5px!important;
+    padding-left: 5px!important;
+}
+
+.no-pad{
+    padding:0!important;
+}
+
+.no-nothin{
+    margin: 0!important;
+    padding:0!important;
+}
+
+
+.website-con{
+}
+
+
+.func-con{
+/*    overflow-y: scroll;*/
+    
+}
+
+.scroll{
+/*    overflow-y: scroll;*/
+    
+}
+
+
+
+
+.intro-con{
+    position: sticky!important;
+    
+}
+
+.sticky{
+    position: fixed!important;
+    
+}
+
+
+
+.func-con{
+    height:100%;
+    min-height: 50rem!important;
+    background-color: var(--mainBG); 
+}
+
+
+.backgroundImage{
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+    position:absolute;
+}
+
+.backgroundOverlay{
+    background-color: var(--mainBG); 
+    opacity: 0.8;
+    z-index: 0;
+    position:absolute;
+}
+
+
+.mainTitle{
+    opacity: 1;
+    z-index: 100;
+    
+    position:relative!important;
+    
+}
+
+.title-container{
+    position:fixed!important;
+}
+
+
+.discogsLogo {
+    
+}
+
+.white{
+    color:#FFF!important;
+}
+
+.mainTitle{
+    margin-top:5rem;
+}
+
+.title{
+    margin-top:1.15rem;
+    padding-left:5%!important; 
+}
+
+.how{
+    margin-top:8rem;
+}
+
+.withlove{
+    margin-top:12rem;
+}
+
+.logo-backdrop{
+}
+
+.logo-backdrop-img{
+    margin-top:9rem;
+    opacity: 0.2;
+}
+
+.search{
+    margin-top:6rem;
+    
+}
+
+
+
+.searchbar{
+    width:20rem;
+    background-color: #424242;
+    
+    border-style: solid!important;
+    border-color: #9F9F9F!important;
+    border-width: 0.1rem!important;
+    border-radius: 0.25rem;
+    height:2.2rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    padding-right: 0.2rem;
+    padding-left: 0.5rem;
+    color: #fff!important;
+    font-family: helvetica-regular;
+    
+    
+    transition-duration: 0.1s;
+}
+
+.searchbar:focus{
+    width:20rem;
+    background-color: var(--mainBG)!important;
+    
+    border-color: #fff!important;
+    
+    color: #fff;
+/*    font-family: helvetica-regular*/
+}
+
+
+
+
+.hidden{
+    display: none!important;
+}
+
+
+.unhide{
+    display: block!important;
+}
+
+
+.viewmore{
+    color:#007bff!important;
+    cursor: pointer;
+    transition-duration: 0.2s;
+}
+
+.viewmore:hover{
+    color:#0050a5!important;
+    cursor: pointer;
+}
+
+
+.results{
+    margin-top:3rem;
+    margin-bottom:2rem;
+}
+
+.cost-box{
+    padding-top:0.25rem;
+    padding-bottom:0.25rem;
+    background-color: #424242;
+    border-radius: 0.5rem;
+    
+    transition-property: height;
+    transition-duration:0.5s;
+}
+
+.cost-container{
+}
+
+
+.section-title{
+margin-bottom:0.2rem;
+}
+
+
+.input-interp-container{
+    margin-top:3rem;
+}
+
+.left-spacer{
+    padding-left:1.5rem!important;
+}
+
+
+.discogsLink{
+    cursor:pointer;
+    transform: scale(1);
+    transition:0.2s ease;
+    opacity: 1;
+    
+}
+
+.discogsLink:hover{
+    cursor:pointer;
+    transform: scale(0.95);
+    opacity: 0.75;
+}
+
+.artist-image-file{
+    width:100%!important;
+}
+
+.artist-desc-text-title{
+    line-height: 1.3;
+   margin-bottom:0rem; 
+}
+
+.album-releases-row{
+    margin-top:0.5rem!important;
+}
+
+.top-bump{
+    margin-top:0.75rem;
+}
+
+
+.artistDesc-container{
+    margin-bottom:2rem;
+}
+
+
+.small-pad{
+    
+    padding-right:0.25rem!important;
+    padding-left:0.25rem!important;
+}
+
+
+.red{
+    color:#fdb62c!important;
+}
+
+.green{
+    color:#33ff4a!important;
+}
+
+.name-text{
+    margin-top: 0.4rem;
+    line-height: 1.2rem;
+}
+
+#estimate{
+    margin-top: -0.75rem;
+}
+
+#tax{
+    margin-top:-0.8rem!important;
+    margin-bottom:0.8rem!important;
+}
+
+
+#estimate,#tax,#moreinfoButton{
+    display: block;
+}
+
+
+#moreinfo{
+/*    padding-top:0.25rem;*/
+}
+
+
+
+#moreinfoButton{
+    width:100%;
+/*    height:100%;*/
+    padding-top:0.35rem;
+    padding-bottom:0.5rem;
+    background-color:#5a5a5a;
+    cursor: pointer;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+
+}
+
+
+.moreinfo-table-row{
+    padding-left:7.5%!important;
+    padding-right:0.5rem!important;
+    padding-top:0.5rem;
+    padding-bottom:0.5rem;
+    margin: 0!important;
+}
+.alternate{
+    background-color:#2d2d2d;
+}
+.main{
+    background-color:#424242;
+}
+
+
+
+
+
+.last-moreinfo-table-row{
+/*    padding-bottom:1rem!important;*/
+}
+
+.loading {
+	-webkit-animation: rotate-scale-up 1s ease-in-out infinite ;
+	        animation: rotate-scale-up 1s ease-in-out infinite ;
+}
+
+
+.table-text,.table-text-right,.table-text-last{
+    display:inline-block!important;
+    margin-left:-0.1rem!important;
+    margin-right:-0.1rem!important;
+    text-align: left;
+    line-height: 1.2rem;
+}
+
+.table-text-right{
+    padding-left: 7.5%!important;
+}
+
+.table-text-last{
+    padding-left: 3%!important;
+}
+
+
+
+.howItWorksContainer{
+    margin-top:4rem!important;
+    position:fixed!important;
+}
+
+.withlove-container{
+    margin-top:16rem!important;
+    position:fixed!important;
+    
+}
+
+/* ----------------------------------------------
+ * Generated by Animista on 2020-4-19 13:16:52
+ * Licensed under FreeBSD License.
+ * See http://animista.net/license for more info. 
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+
+/**
+ * ----------------------------------------
+ * animation rotate-scale-up
+ * ----------------------------------------
+ */
+@-webkit-keyframes rotate-scale-up {
+  0% {
+    -webkit-transform: scale(1) rotateZ(0);
+            transform: scale(1) rotateZ(0);
+  }
+  50% {
+    -webkit-transform: scale(1.3) rotateZ(180deg);
+            transform: scale(1.3) rotateZ(180deg);
+  }
+  100% {
+    -webkit-transform: scale(1) rotateZ(360deg);
+            transform: scale(1) rotateZ(360deg);
+  }
+}
+@keyframes rotate-scale-up {
+  0% {
+    -webkit-transform: scale(1) rotateZ(0);
+            transform: scale(1) rotateZ(0);
+  }
+  50% {
+    -webkit-transform: scale(1.3) rotateZ(180deg);
+            transform: scale(1.3) rotateZ(180deg);
+  }
+  100% {
+    -webkit-transform: scale(1) rotateZ(360deg);
+            transform: scale(1) rotateZ(360deg);
+  }
+}

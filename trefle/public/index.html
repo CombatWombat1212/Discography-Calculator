@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- 
+This is the front end of a plant finder app.
+It allows you to search for artists and generate a formatted list
+It uses the trefle API, available at https://trefle.io/
+It also uses "materialize" css for styling.
+-->
+
+<title>Find Artists</title>
+<link rel="stylesheet" href="styles.css">
+<script type="text/javascript">
+var total;
+    
+    
+  // get node to fetch us a fresh token
+  var token = "QagHAEdpLddYKnYHjInWFOOiEgbUBpmzYZDnzviM";
+//  fetch("/token")
+//    .then(response => response.json())
+//    .then(json => { token = json['token']; return token; })
+//    .catch(error => console.log('error', error));
+
+// runs a search for the given terms
+// and trigger a rendering for each one
+var search = (terms) => {
+  document.getElementById("content").innerHTML = '';
+    
+//curl "https://api.discogs.com/database/search?q=Nirvana&token=abcxyz123456"
+    
+  fetch('https://api.discogs.com/database/search?q='+terms+'&type=artist&token='+token  )
+    .then(response => response.json())
+    .then(artists => {
+    
+      console.log(artists);
+      
+        for (i in artists.results){
+//            console.log(artists[i]);
+            render(artists.results[i]); 
+//            findartist(artists.results[i]); 
+        }
+     })
+    .catch(error => console.log('error', error));
+}
+
+// render the plant by fetching additional details
+
+
+
+
+var render = (artist) => {
+    
+    console.log(artist);
+//    artist = artist;
+    
+//    total += 12
+    
+    document.getElementById("content").innerHTML +=
+    '<div class="col s12 m7">'+
+    '<h2 class="header">'+artist.title+'</h2>'+
+    '<div class="card horizontal">'+
+      '<div class="card-image">'+
+        '<img width="150" src="'+artist.thumb+'">'+
+      '</div>'+
+      '<div class="card-stacked">'+
+        '<div class="card-content">'+
+//          '<p><b>Division</b>: '+ details.division.name +'<br/>'+
+//          '<b>Family</b>: '+ details.family.name+'<br/>'+
+//          '<b>Genus</b>: '+ details.genus.name+'</p>'+
+        '</div>'+
+          artist.id +
+      '</div>'+
+    '</div>'+
+  '</div>';
+    
+    
+    
+    
+    
+    
+}
+
+// when the form is submitted, run the search
+var formSubmit = (e) => {
+   event.preventDefault();
+   var terms = document.getElementById("search").value;
+   search(terms);
+}
+
+</script>
+
+<!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<!-- Compiled and minified CSS -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+</head>
+<body>
+
+  <!-- Navigation bar to hold search form-->
+  <nav>
+   <div class="nav-wrapper">
+     <form onsubmit="formSubmit(this)">
+       <div class="input-field">
+         <input placeholder="Find a Plant"  id="search" type="search" required>
+         <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+         <i class="material-icons">close</i>
+       </div>
+     </form>
+   </div>
+ </nav>
+
+  <section id="content">
+      <!--search results will be added here dynamically -->
+  </section>
+
+     <!-- Compiled and minified JavaScript -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>
